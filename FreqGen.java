@@ -35,7 +35,7 @@ public class FreqGen
                     yu = 0;
                     cur = 0;
                 }
-                l.setText(Integer.toString(n));
+                l.setText("██");
                 if (ctr == 0)
                 {
                     if (yu != n)
