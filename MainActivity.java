@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity  {
 
 
     
-    NotificationManager notificationManager;
     Button btnNotification;
 
     @Override
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
 
         initViews();
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        
         
 
         
@@ -57,25 +56,7 @@ public class MainActivity extends AppCompatActivity  {
 addNotification("Abhay", "Aditya");
 addNotification("Aditya", "Aditya");
                 
-                   /* String channel_id = "";
-                    
-                    PendingIntent contentIntent = PendingIntent.getActivity(MainActivity.this, 0, new Intent(MainActivity.this, MainActivity.class), 0);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        
-                        
-                        channel_id = notificationManager.getNotificationChannel("Test_char").getId();
-                        contentIntent = PendingIntent.getActivity(MainActivity.this, 0, new Intent(MainActivity.this, MainActivity.class).putExtra("importance", notificationManager.getNotificationChannel(channel_id).getImportance()).putExtra("channel_id", channel_id), PendingIntent.FLAG_UPDATE_CURRENT);
-                    }
-                    NotificationCompat.Builder notification = new NotificationCompat.Builder(MainActivity.this, channel_id)
-                            .setContentTitle("Test")
-                            .setContentText("Notification")
-                            
-                            .setContentIntent(contentIntent)
-                            .setSmallIcon(R.mipmap.ic_launcher);
-
-                    
-                    notificationManager.notify(1, notification.build());*/
+                   
                 
             }
         });
@@ -87,6 +68,7 @@ addNotification("Aditya", "Aditya");
     }
 
     public void addNotification(String sender, String rcvr) {
+NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 createNotificationChannels(sender);
      String channel_id = "";  
 
@@ -132,7 +114,7 @@ NotificationCompat.Builder builder =
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
                 NotificationChannel notificationChannel = new NotificationChannel(s + "_char", s, NotificationManager.IMPORTANCE_HIGH);
-                
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 
                 
 
