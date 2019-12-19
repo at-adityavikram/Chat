@@ -1,137 +1,66 @@
-package com.journaldev.notificationchannels;
+package com.example.job;
 
-import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Build;
-import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.app.job.JobInfo; 
+import android.app.job.JobScheduler; 
+import android.widget.*;
+import android.content.ComponentName; 
+import android.content.SharedPreferences.*;
+import android.preference.PreferenceManager;
+import android.os.*;
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.*;
+import android.view.View.*;
+import java.net.*;
+import android.widget.*;
+import java.util.*;
+import android.speech.tts.*;
+import android.speech.tts.TextToSpeech.*;
+import android.speech.*;
+import android.content.*;
+import android.content.Context.*;
+import android.content.pm.*;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import java.util.concurrent.*;
+import java.io.*; 
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity  {
-
-
-    
-    Button btnNotification;
+public class MainActivity extends Activity {
+Context df = this;
+SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initViews();
-        
-        
-
-        
-        
-
-        
-
-
-
-
-
-        btnNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-addNotification("Abhay", "Aditya");
-addNotification("Aditya", "Aditya");
-                
-                   
-                
-            }
-        });
-    }
-
-    private void initViews() {
-        
-        btnNotification = findViewById(R.id.btnNotification);
-    }
-
-    public void addNotification(String sender, String rcvr) {
-NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-createNotificationChannels(sender);
-     String channel_id = "";  
-
-
-        
-        
-        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, new Intent(MainActivity.this, MainActivity.class), 0);
-   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        
-                        
-                        channel_id = notificationManager.getNotificationChannel(sender + "_char").getId();
-                        pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, new Intent(MainActivity.this, MainActivity.class).putExtra("importance", notificationManager.getNotificationChannel(channel_id).getImportance()).putExtra("channel_id", channel_id), PendingIntent.FLAG_UPDATE_CURRENT);
-                    }      
-        
-NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this, channel_id)                       
-                        .setContentTitle(sender)
-                        
-                        .setContentText("New Message From " + sender)
-                        .setAutoCancel(true)
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .setContentIntent(pendingIntent)
-
-                        .setSmallIcon(R.mipmap.ic_launcher);
-        notificationManager.notify(giveId(sender), builder.build());
-    }
-
-    public int giveId(String s)
-    {
-        int asc = 0;
-        for (int i = 0; i < s.length(); i++)
-        {
-            char j = s.charAt(i);
-            int ascii = j;
-            asc += ascii;
-        }
-        return asc;
-    }
-
-
-    private void createNotificationChannels(String s) {
-        
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
-                NotificationChannel notificationChannel = new NotificationChannel(s + "_char", s, NotificationManager.IMPORTANCE_HIGH);
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                
-                
-
-                
-                if (notificationManager != null) {
-                    notificationManager.createNotificationChannel(notificationChannel);
-                    
-                }
-            }
-        
-    }
-
-
-    
-
-
+     setContentView(R.layout.activity_main);
+final EditText fg = findViewById(R.id.sta);
+Button start = findViewById(R.id.start);
+start.setOnClickListener(new OnClickListener()
+{
+public void onClick(View v)
+{
+ 
+pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+Editor editor = pref.edit();
+editor.putString("user", fg.getText().toString());
+editor.commit();
+JobScheduler jobScheduler = (JobScheduler)getApplicationContext().getSystemService(JOB_SCHEDULER_SERVICE); 
+ComponentName componentName = new ComponentName(MainActivity.this, DbUpdateJobService.class.getName()); 
+JobInfo jobInfo = new JobInfo.Builder(1, componentName).setMinimumLatency(1000).build(); 
+jobScheduler.schedule(jobInfo);
 }
-
-
-
+});
+Button stop = findViewById(R.id.stop);
+stop.setOnClickListener(new OnClickListener()
+{
+public void onClick(View v)
+{
+JobScheduler jobScheduler = (JobScheduler)getApplicationContext().getSystemService(JOB_SCHEDULER_SERVICE);
+jobScheduler.cancelAll();
+}
+});
+    }
+}
