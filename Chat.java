@@ -13,7 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.*;
+import android.text.method.LinkMovementMethod;
 import android.text.style.AlignmentSpan;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -238,6 +240,7 @@ public class Chat extends AppCompatActivity {
                     {
                         map.put("stat", "S");
                         Firebase ref1 = reference1.push();
+                        Firebase ref2 = reference2.push();
                         String yk = ref1.getKey();
                         map.put("key", yk);
                         if (rep == 1)
@@ -253,7 +256,9 @@ public class Chat extends AppCompatActivity {
                         {
                             map.put("rep", "N");
                         }
-                        reference2.push().setValue(map);
+                        String krey = ref2.getKey();
+                        map.put("keyr", krey);
+                        ref2.setValue(map);
                         Firebase rtt = reference3.push();
                         String ytk = rtt.getKey();
                         map.put("r", ytk);
@@ -277,6 +282,7 @@ public class Chat extends AppCompatActivity {
                 String userName = map.get("user").toString();
                 String uy = dataSnapshot.getKey();
                 String ku = "";
+                String hc = map.get("keyr").toString();
                 SpannableStringBuilder toac = new SpannableStringBuilder("");
                 String delk = "";
                 if (map.get("rep").toString().equals("Y"))
@@ -284,7 +290,7 @@ public class Chat extends AppCompatActivity {
                     String remp = map.get("repm").toString();
                     String userNamex = map.get("rto").toString();
                     final String repk;
-                    if (userNamex.equals(UserDetails.username))
+                    if (userName.equals(UserDetails.username))
                     {
                         repk = map.get("repk").toString();
                     }
@@ -305,15 +311,23 @@ public class Chat extends AppCompatActivity {
                             else
                             {
                                 Firebase referencee2 = new Firebase("https://scichat-xiscience.firebaseio.com/1Science");
-                                referencee2.child(repk).child("scr").setValue("Y");
+                                referencee2.child(repk).child("scr").setValue(UserDetails.username);
                             }
+                        }
+
+                        @Override
+                        public void updateDrawState(TextPaint ds)
+                        {
+                            super.updateDrawState(ds);
+                            ds.setUnderlineText(false);
                         }
                     };
                     toac = new SpannableStringBuilder(System.getProperty("line.separator") + System.getProperty("line.separator") + userNamex + System.getProperty("line.separator") + remp);
-                    toac.setSpan(new ForegroundColorSpan(Color.parseColor("#964B00")), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(new ForegroundColorSpan(Color.WHITE), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(new BackgroundColorSpan(Color.BLACK), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     toac.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, 2 + userNamex.length() +  + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     toac.setSpan(new RelativeSizeSpan(1.0f), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    toac.setSpan(clickableSpan, 2 + userNamex.length() + 1, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(clickableSpan, 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 if (!UserDetails.chatWith.equals("1Science")) {
                     state = map.get("stat").toString();
@@ -372,7 +386,7 @@ public class Chat extends AppCompatActivity {
                         toa.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + timex.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         AlignmentSpan asd = new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE);
                         toa.setSpan(asd, userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + timex.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        addMessageBox(toa, toac, userName, 2, uy, ku, delk, map);
+                        addMessageBox(toa, toac, userName, 2, uy, ku, delk, map, hc);
                     }
                     else
                     {
@@ -384,7 +398,7 @@ public class Chat extends AppCompatActivity {
                         toa.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), message.length() + 1, message.length() + 1 + timex.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         AlignmentSpan asd = new AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE);
                         toa.setSpan(asd, message.length() + 1, message.length() + 1 + timex.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        addMessageBox(toa, toac, userName, 2, uy, ku, delk, map);
+                        addMessageBox(toa, toac, userName, 2, uy, ku, delk, map, hc);
                     }
                 }
                 else{
@@ -398,7 +412,7 @@ public class Chat extends AppCompatActivity {
                         toa.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new RelativeSizeSpan(0.7f), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        addMessageBox(toa, toac, userName, 1, uy, ku, delk, map);
+                        addMessageBox(toa, toac, userName, 1, uy, ku, delk, map, hc);
                     }
                     else
                     {
@@ -408,7 +422,7 @@ public class Chat extends AppCompatActivity {
                         toa.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), message.length() + 1, message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new RelativeSizeSpan(0.7f), message.length() + 1, message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), message.length() + 1, message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        addMessageBox(toa, toac, userName, 1, uy, ku, delk, map);
+                        addMessageBox(toa, toac, userName, 1, uy, ku, delk, map, hc);
                     }
                 }
                 scrollView.post(new Runnable() {
@@ -529,10 +543,12 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-    public void addMessageBox(final SpannableStringBuilder msg, final SpannableStringBuilder msgx, final String us, final int type, final String key, final String keyu, final String delid, final Map mapy){
+    public void addMessageBox(final SpannableStringBuilder msg, final SpannableStringBuilder msgx, final String us, final int type, final String key, final String keyu, final String delid, final Map mapy, final String keyt){
         final TextView textView = new TextView(Chat.this);
         textView.setText(TextUtils.concat(msg, msgx));
         textView.setTextIsSelectable(true);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setHighlightColor(Color.TRANSPARENT);
         textView.setPadding(10, 5, 10, 5);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp2.weight = 7.0f;
@@ -551,14 +567,60 @@ public class Chat extends AppCompatActivity {
                         referencee2.child(keyu).child("stat").setValue("R");
                     }
                 }
-                Firebase referencee = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_" + UserDetails.chatWith);
+                final Firebase referencee = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_" + UserDetails.chatWith);
                 referencee.addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                    {
+                        Map map = dataSnapshot.getValue(Map.class);
+                        String scros = map.get("scr").toString();
+                        if (scros.equals(UserDetails.username))
+                        {
+                            referencee.child(key).child("scr").setValue("N");
+                            scrollToView(scrollView, textView);
+                            textView.setBackgroundColor(Color.RED);
+                            new CountDownTimer(1000, 50)
+                            {
+                                @Override
+                                public void onTick(long arg0)
+                                {
+
+                                }
+
+                                @Override
+                                public void onFinish()
+                                {
+                                    textView.setBackgroundResource(R.drawable.bubble_in);
+                                }
+                            }.start();
+                        }
                     }
 
                     @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                    {
+                        Map map = dataSnapshot.getValue(Map.class);
+                        String scros = map.get("scr").toString();
+                        if (scros.equals(UserDetails.username))
+                        {
+                            referencee.child(key).child("scr").setValue("N");
+                            scrollToView(scrollView, textView);
+                            textView.setBackgroundColor(Color.RED);
+                            new CountDownTimer(1000, 50)
+                            {
+                                @Override
+                                public void onTick(long arg0)
+                                {
+
+                                }
+
+                                @Override
+                                public void onFinish()
+                                {
+                                    textView.setBackgroundResource(R.drawable.bubble_in);
+                                }
+                            }.start();
+                        }
                     }
 
                     @Override
@@ -590,14 +652,60 @@ public class Chat extends AppCompatActivity {
                         referencee2.child(keyu).child(UserDetails.username).setValue("R");
                     }
                 }
-                Firebase referencee = new Firebase("https://scichat-xiscience.firebaseio.com/1Science");
+                final Firebase referencee = new Firebase("https://scichat-xiscience.firebaseio.com/1Science");
                 referencee.addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s)
+                    {
+                        Map map = dataSnapshot.getValue(Map.class);
+                        String scros = map.get("scr").toString();
+                        if (scros.equals(UserDetails.username))
+                        {
+                            referencee.child(key).child("scr").setValue("N");
+                            scrollToView(scrollView, textView);
+                            textView.setBackgroundColor(Color.RED);
+                            new CountDownTimer(1000, 50)
+                            {
+                                @Override
+                                public void onTick(long arg0)
+                                {
+
+                                }
+
+                                @Override
+                                public void onFinish()
+                                {
+                                    textView.setBackgroundResource(R.drawable.bubble_in);
+                                }
+                            }.start();
+                        }
                     }
 
                     @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s)
+                    {
+                        Map map = dataSnapshot.getValue(Map.class);
+                        String scros = map.get("scr").toString();
+                        if (scros.equals(UserDetails.username))
+                        {
+                            referencee.child(key).child("scr").setValue("N");
+                            scrollToView(scrollView, textView);
+                            textView.setBackgroundColor(Color.RED);
+                            new CountDownTimer(1000, 50)
+                            {
+                                @Override
+                                public void onTick(long arg0)
+                                {
+
+                                }
+
+                                @Override
+                                public void onFinish()
+                                {
+                                    textView.setBackgroundResource(R.drawable.bubble_in);
+                                }
+                            }.start();
+                        }
                     }
 
                     @Override
@@ -636,6 +744,21 @@ public class Chat extends AppCompatActivity {
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
+                                textView.setBackgroundColor(Color.RED);
+                                new CountDownTimer(1000, 50)
+                                {
+                                    @Override
+                                    public void onTick(long arg0)
+                                    {
+
+                                    }
+
+                                    @Override
+                                    public void onFinish()
+                                    {
+                                        textView.setBackgroundResource(R.drawable.bubble_out);
+                                    }
+                                }.start();
                             }
                             String zxc = map.get("stat").toString();
                             if (zxc.equals("D")) {
@@ -660,6 +783,21 @@ public class Chat extends AppCompatActivity {
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
+                                textView.setBackgroundColor(Color.RED);
+                                new CountDownTimer(1000, 50)
+                                {
+                                    @Override
+                                    public void onTick(long arg0)
+                                    {
+
+                                    }
+
+                                    @Override
+                                    public void onFinish()
+                                    {
+                                        textView.setBackgroundResource(R.drawable.bubble_out);
+                                    }
+                                }.start();
                             }
                             if (zxc.equals("D")) {
                                 msg.replace(msg.length() - stry.length(), msg.length(), "✓✓");
@@ -697,10 +835,25 @@ public class Chat extends AppCompatActivity {
                         if (dataSnapshot.getKey().equals(key)) {
                             Map map = dataSnapshot.getValue(Map.class);
                             String scros = map.get("scr").toString();
-                            if (scros.equals("Y"))
+                            if (scros.equals(UserDetails.username))
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
+                                textView.setBackgroundColor(Color.RED);
+                                new CountDownTimer(1000, 50)
+                                {
+                                    @Override
+                                    public void onTick(long arg0)
+                                    {
+
+                                    }
+
+                                    @Override
+                                    public void onFinish()
+                                    {
+                                        textView.setBackgroundResource(R.drawable.bubble_out);
+                                    }
+                                }.start();
                             }
                             String iz = getStat(map);
 
@@ -725,10 +878,25 @@ public class Chat extends AppCompatActivity {
                             Map map = dataSnapshot.getValue(Map.class);
                             String iz = getStat(map);
                             String scros = map.get("scr").toString();
-                            if (scros.equals("Y"))
+                            if (scros.equals(UserDetails.username))
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
+                                textView.setBackgroundColor(Color.RED);
+                                new CountDownTimer(1000, 50)
+                                {
+                                    @Override
+                                    public void onTick(long arg0)
+                                    {
+
+                                    }
+
+                                    @Override
+                                    public void onFinish()
+                                    {
+                                        textView.setBackgroundResource(R.drawable.bubble_out);
+                                    }
+                                }.start();
                             }
                             if (iz.contains("R") && !iz.contains("D") && !iz.contains("S"))
                             {
@@ -762,9 +930,9 @@ public class Chat extends AppCompatActivity {
             }
         }
         textView.setLayoutParams(lp2);
-        textView.setOnClickListener(new View.OnClickListener()
+        textView.setOnLongClickListener(new View.OnLongClickListener()
         {
-            public void onClick(View v)
+            public boolean onLongClick(View v)
             {
                 PopupMenu popup = new PopupMenu(Chat.this, textView);
                 popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
@@ -827,7 +995,7 @@ public class Chat extends AppCompatActivity {
                             {
                                 Firebase referencee4 = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.chatWith + "_" + UserDetails.username);
                                 Firebase referencee5 = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_" + UserDetails.chatWith);
-                                referencee4.child(keyu).setValue(null);
+                                referencee4.child(keyt).setValue(null);
                                 referencee5.child(key).setValue(null);
                                 Firebase reference9 = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.chatWith + "_Refresh");
                                 reference9.child(delid).setValue(null);
@@ -874,8 +1042,16 @@ public class Chat extends AppCompatActivity {
                             {
                                 repm = mnb;
                             }
-                            repkey = key;
-                            repko = keyu;
+                            if (us.equals(UserDetails.username))
+                            {
+                                repkey = keyu;
+                                repko = keyt;
+                            }
+                            else
+                            {
+                                repkey = keyt;
+                                repko = keyu;
+                            }
                             repu = us;
                             Toast.makeText(Chat.this, "Replying To: " + System.getProperty("line.separator") + us + System.getProperty("line.separator") + repm, Toast.LENGTH_LONG).show();
                         }
@@ -884,6 +1060,7 @@ public class Chat extends AppCompatActivity {
                 });
 
                 popup.show();
+                return true;
             }
         });
         layout.addView(textView);
