@@ -24,6 +24,7 @@ import android.view.*;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,16 +62,21 @@ import java.util.Map;
 public class Chat extends AppCompatActivity {
     LinearLayout layout;
     RelativeLayout layout_2;
+    TextView hgl;
     ImageView sendButton;
     ArrayList<String> alkan = new ArrayList<>();
     ArrayList<String> alc = new ArrayList<>(Arrays.asList("yu", "#915117", "#ffa500", "#00ff00", "#ff0000"));
     EditText messageArea;
+    TextView replyArea;
     ScrollView scrollView;
     Firebase reference1, reference2, reference3, reference4;
     TextView cuuser;
     String state;
     int fbn = 0;
     int rep = 0;
+    int redao = 0;
+    int read = 0;
+    int ctr = 0;
     String repm = "";
     String repu = "";
     String repko = "";
@@ -119,6 +125,9 @@ public class Chat extends AppCompatActivity {
         layout_2 = findViewById(R.id.layout2);
         sendButton = findViewById(R.id.sendButton);
         messageArea = findViewById(R.id.messageArea);
+        replyArea = findViewById(R.id.replyArea);
+        replyArea.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        replyArea.setPadding(10, 5, 10,14);
         scrollView = findViewById(R.id.scrollView);
         cuuser = findViewById(R.id.cuuser);
         cuuser.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
@@ -128,6 +137,21 @@ public class Chat extends AppCompatActivity {
         Firebase.setAndroidContext(this);
         Firebase referenceee = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_Stat");
         referenceee.child("Stat").child("stat").setValue("ONLINE");
+
+        replyArea.setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                rep = 0;
+                repm = "";
+                repkey = "";
+                repko = "";
+                repu = "";
+                replyArea.setVisibility(View.GONE);
+                return true;
+            }
+        });
 
         messageArea.addTextChangedListener(new TextWatcher() {
             Firebase reference6 = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_Stat");
@@ -143,7 +167,18 @@ public class Chat extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                reference6.child("Stat").child("stat").setValue("ONLINE");
+                new CountDownTimer(1500, 50) {
+                    @Override
+                    public void onTick(long arg0) {
+
+                    }
+
+                    @Override
+                    public void onFinish()
+                    {
+                        reference6.child("Stat").child("stat").setValue("ONLINE");
+                    }
+                }.start();
             }
         });
 
@@ -251,6 +286,10 @@ public class Chat extends AppCompatActivity {
                             map.put("repko", repko);
                             map.put("rep", "Y");
                             map.put("rto", repu);
+                            repm = "";
+                            repkey = "";
+                            repko = "";
+                            repu = "";
                         }
                         else
                         {
@@ -268,6 +307,7 @@ public class Chat extends AppCompatActivity {
                         map1.put("key", yk);
                         rtt.setValue(map1);
                     }
+                    replyArea.setVisibility(View.GONE);
                     messageArea.setText("");
                     scrollView.fullScroll(View.FOCUS_DOWN);
                 }
@@ -277,12 +317,13 @@ public class Chat extends AppCompatActivity {
         reference1.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
+                ctr += 1;
                 final Map map = dataSnapshot.getValue(Map.class);
                 String message = map.get("message").toString();
                 String userName = map.get("user").toString();
                 String uy = dataSnapshot.getKey();
                 String ku = "";
-                String hc = map.get("keyr").toString();
+                String hc = "";
                 SpannableStringBuilder toac = new SpannableStringBuilder("");
                 String delk = "";
                 if (map.get("rep").toString().equals("Y"))
@@ -320,18 +361,24 @@ public class Chat extends AppCompatActivity {
                         {
                             super.updateDrawState(ds);
                             ds.setUnderlineText(false);
+                            ds.setColor(Color.WHITE);
                         }
                     };
-                    toac = new SpannableStringBuilder(System.getProperty("line.separator") + System.getProperty("line.separator") + userNamex + System.getProperty("line.separator") + remp);
-                    toac.setSpan(new ForegroundColorSpan(Color.WHITE), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    toac.setSpan(new BackgroundColorSpan(Color.BLACK), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    toac.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, 2 + userNamex.length() +  + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    toac.setSpan(new RelativeSizeSpan(1.0f), 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    toac.setSpan(clickableSpan, 0, 2 + userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    double ran = Math.random();
+                    ran = ran * 4 + 1;
+                    int rai = (int) ran;
+                    toac = new SpannableStringBuilder(userNamex + System.getProperty("line.separator") + remp);
+                    toac.setSpan(new RelativeSizeSpan(0.9f), userNamex.length() + 1, userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(new RelativeSizeSpan(0.6f), 0, userNamex.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(new ForegroundColorSpan(Color.WHITE), userNamex.length() + 1, userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(new ForegroundColorSpan(Color.parseColor(alc.get(rai))), 0, userNamex.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, userNamex.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toac.setSpan(clickableSpan, userNamex.length() + 1, userNamex.length() + 1 + remp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 if (!UserDetails.chatWith.equals("1Science")) {
                     state = map.get("stat").toString();
                     ku = map.get("key").toString();
+                    hc = map.get("keyr").toString();
                     if (userName.equals(UserDetails.username))
                     {
                         delk = map.get("r").toString();
@@ -412,7 +459,17 @@ public class Chat extends AppCompatActivity {
                         toa.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new RelativeSizeSpan(0.7f), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), userName.length() + 1 + message.length() + 1, userName.length() + 1 + message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        if (!map.get(UserDetails.username).toString().equals("R") && read == 0)
+                        {
+                            addUnread();
+                            read = 1;
+                            redao = 1;
+                        }
                         addMessageBox(toa, toac, userName, 1, uy, ku, delk, map, hc);
+                        if (dataSnapshot.getChildrenCount() == ctr)
+                        {
+                            read = 2;
+                        }
                     }
                     else
                     {
@@ -422,15 +479,51 @@ public class Chat extends AppCompatActivity {
                         toa.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), message.length() + 1, message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new RelativeSizeSpan(0.7f), message.length() + 1, message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         toa.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), message.length() + 1, message.length() + 1 + time.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        if (!map.get("stat").toString().equals("R") && read == 0)
+                        {
+                            addUnread();
+                            read = 1;
+                        }
+                        if (read == 1)
+                        {
+                            reference1.child(dataSnapshot.getKey()).child("stat").setValue("R");
+                        }
                         addMessageBox(toa, toac, userName, 1, uy, ku, delk, map, hc);
+                        if (dataSnapshot.getChildrenCount() == ctr)
+                        {
+                            read = 2;
+                        }
                     }
                 }
-                scrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.fullScroll(View.FOCUS_DOWN);
+                if (read == 0)
+                {
+                    scrollView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(View.FOCUS_DOWN);
+                        }
+                    });
+                }
+                else if (read == 1)
+                {
+                    scrollToView(scrollView, hgl);
+                }
+                else if (read == 2)
+                {
+                    if (redao == 1)
+                    {
+                        scrollToView(scrollView, hgl);
+                        redao = 2;
                     }
-                });
+                    else {
+                        scrollView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                scrollView.fullScroll(View.FOCUS_DOWN);
+                            }
+                        });
+                    }
+                }
             }
 
             @Override
@@ -453,12 +546,35 @@ public class Chat extends AppCompatActivity {
 
             }
         });
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
+        if (read == 0)
+        {
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
+        }
+        else if (read == 1)
+        {
+            scrollToView(scrollView, hgl);
+        }
+        else if (read == 2)
+        {
+            if (redao == 1)
+            {
+                scrollToView(scrollView, hgl);
+                redao = 2;
             }
-        });
+            else {
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        }
 
         if (!UserDetails.chatWith.equals("1Science"))
         {
@@ -545,18 +661,28 @@ public class Chat extends AppCompatActivity {
 
     public void addMessageBox(final SpannableStringBuilder msg, final SpannableStringBuilder msgx, final String us, final int type, final String key, final String keyu, final String delid, final Map mapy, final String keyt){
         final TextView textView = new TextView(Chat.this);
-        textView.setText(TextUtils.concat(msg, msgx));
+        textView.setText(msg);
         textView.setTextIsSelectable(true);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         textView.setHighlightColor(Color.TRANSPARENT);
         textView.setPadding(10, 5, 10, 5);
+        final TextView textViewx = new TextView(Chat.this);
+        textViewx.setText(msgx);
+        textViewx.setBackgroundColor(Color.BLACK);
+        textViewx.setMovementMethod(LinkMovementMethod.getInstance());
+        textViewx.setHighlightColor(Color.TRANSPARENT);
+        textViewx.setPadding(10, 5, 10, 5);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp2.weight = 7.0f;
         lp2.setMargins(0,8,0,0);
+        LinearLayout.LayoutParams lp3 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //lp3.weight = 7.0f;
 
         if(type == 1) {
             lp2.gravity = Gravity.LEFT;
             lp2.setMargins(0, 10, 400, 0);
+            lp3.gravity = Gravity.LEFT;
+            lp3.setMargins(0, 10, 400, 0);
             textView.setBackgroundResource(R.drawable.bubble_in);
             if (!UserDetails.chatWith.equals("1Science")) {
                 if (fbn == 0) {
@@ -572,54 +698,50 @@ public class Chat extends AppCompatActivity {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s)
                     {
-                        Map map = dataSnapshot.getValue(Map.class);
-                        String scros = map.get("scr").toString();
-                        if (scros.equals(UserDetails.username))
-                        {
-                            referencee.child(key).child("scr").setValue("N");
-                            scrollToView(scrollView, textView);
-                            textView.setBackgroundColor(Color.RED);
-                            new CountDownTimer(1000, 50)
-                            {
-                                @Override
-                                public void onTick(long arg0)
-                                {
+                        if (dataSnapshot.getKey().equals(key)) {
+                            Map map = dataSnapshot.getValue(Map.class);
+                            String scros = map.get("scr").toString();
+                            if (scros.equals("Y")) {
+                                referencee.child(key).child("scr").setValue("N");
+                                scrollToView(scrollView, textView);
+                                textView.setBackgroundResource(R.drawable.bubble_sel);
+                                new CountDownTimer(1000, 50) {
+                                    @Override
+                                    public void onTick(long arg0) {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onFinish()
-                                {
-                                    textView.setBackgroundResource(R.drawable.bubble_in);
-                                }
-                            }.start();
+                                    @Override
+                                    public void onFinish() {
+                                        textView.setBackgroundResource(R.drawable.bubble_in);
+                                    }
+                                }.start();
+                            }
                         }
                     }
 
                     @Override
                     public void onChildChanged(DataSnapshot dataSnapshot, String s)
                     {
-                        Map map = dataSnapshot.getValue(Map.class);
-                        String scros = map.get("scr").toString();
-                        if (scros.equals(UserDetails.username))
-                        {
-                            referencee.child(key).child("scr").setValue("N");
-                            scrollToView(scrollView, textView);
-                            textView.setBackgroundColor(Color.RED);
-                            new CountDownTimer(1000, 50)
-                            {
-                                @Override
-                                public void onTick(long arg0)
-                                {
+                        if (dataSnapshot.getKey().equals(key)) {
+                            Map map = dataSnapshot.getValue(Map.class);
+                            String scros = map.get("scr").toString();
+                            if (scros.equals("Y")) {
+                                referencee.child(key).child("scr").setValue("N");
+                                scrollToView(scrollView, textView);
+                                textView.setBackgroundResource(R.drawable.bubble_sel);
+                                new CountDownTimer(1000, 50) {
+                                    @Override
+                                    public void onTick(long arg0) {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onFinish()
-                                {
-                                    textView.setBackgroundResource(R.drawable.bubble_in);
-                                }
-                            }.start();
+                                    @Override
+                                    public void onFinish() {
+                                        textView.setBackgroundResource(R.drawable.bubble_in);
+                                    }
+                                }.start();
+                            }
                         }
                     }
 
@@ -663,7 +785,7 @@ public class Chat extends AppCompatActivity {
                         {
                             referencee.child(key).child("scr").setValue("N");
                             scrollToView(scrollView, textView);
-                            textView.setBackgroundColor(Color.RED);
+                            textView.setBackgroundResource(R.drawable.bubble_sel);
                             new CountDownTimer(1000, 50)
                             {
                                 @Override
@@ -690,7 +812,7 @@ public class Chat extends AppCompatActivity {
                         {
                             referencee.child(key).child("scr").setValue("N");
                             scrollToView(scrollView, textView);
-                            textView.setBackgroundColor(Color.RED);
+                            textView.setBackgroundResource(R.drawable.bubble_sel);
                             new CountDownTimer(1000, 50)
                             {
                                 @Override
@@ -731,6 +853,8 @@ public class Chat extends AppCompatActivity {
         else{
             lp2.gravity = Gravity.RIGHT;
             lp2.setMargins(400, 10, 0, 0);
+            lp3.gravity = Gravity.RIGHT;
+            lp3.setMargins(400, 10, 0, 0);
             textView.setBackgroundResource(R.drawable.bubble_out);
             if (!UserDetails.chatWith.equals("1Science")) {
                 final Firebase referencee = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_" + UserDetails.chatWith);
@@ -744,7 +868,7 @@ public class Chat extends AppCompatActivity {
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
-                                textView.setBackgroundColor(Color.RED);
+                                textView.setBackgroundResource(R.drawable.bubble_sel);
                                 new CountDownTimer(1000, 50)
                                 {
                                     @Override
@@ -763,12 +887,12 @@ public class Chat extends AppCompatActivity {
                             String zxc = map.get("stat").toString();
                             if (zxc.equals("D")) {
                                 msg.replace(msg.length() - stry.length(), msg.length(), "✓✓");
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                                 stry = "✓✓";
                             } else if (zxc.equals("R")) {
                                 stry = "✓✓";
                                 msg.setSpan(new ForegroundColorSpan(Color.parseColor("#00ff00")), msg.length() - stry.length(), msg.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                             }
                         }
                     }
@@ -783,7 +907,7 @@ public class Chat extends AppCompatActivity {
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
-                                textView.setBackgroundColor(Color.RED);
+                                textView.setBackgroundResource(R.drawable.bubble_sel);
                                 new CountDownTimer(1000, 50)
                                 {
                                     @Override
@@ -801,12 +925,12 @@ public class Chat extends AppCompatActivity {
                             }
                             if (zxc.equals("D")) {
                                 msg.replace(msg.length() - stry.length(), msg.length(), "✓✓");
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                                 stry = "✓✓";
                             } else if (zxc.equals("R")) {
                                 stry = "✓✓";
                                 msg.setSpan(new ForegroundColorSpan(Color.parseColor("#00ff00")), msg.length() - stry.length(), msg.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                             }
                         }
                     }
@@ -839,7 +963,7 @@ public class Chat extends AppCompatActivity {
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
-                                textView.setBackgroundColor(Color.RED);
+                                textView.setBackgroundResource(R.drawable.bubble_sel);
                                 new CountDownTimer(1000, 50)
                                 {
                                     @Override
@@ -861,12 +985,12 @@ public class Chat extends AppCompatActivity {
                             {
                                 stry = "✓✓";
                                 msg.setSpan(new ForegroundColorSpan(Color.parseColor("#00ff00")), msg.length() - stry.length(), msg.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                             }
                             else if (iz.contains("D") && !iz.contains("S"))
                             {
                                 msg.replace(msg.length() - stry.length(), msg.length(), "✓✓");
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                                 stry = "✓✓";
                             }
                         }
@@ -882,7 +1006,7 @@ public class Chat extends AppCompatActivity {
                             {
                                 referencee.child(key).child("scr").setValue("N");
                                 scrollToView(scrollView, textView);
-                                textView.setBackgroundColor(Color.RED);
+                                textView.setBackgroundResource(R.drawable.bubble_sel);
                                 new CountDownTimer(1000, 50)
                                 {
                                     @Override
@@ -902,12 +1026,12 @@ public class Chat extends AppCompatActivity {
                             {
                                 stry = "✓✓";
                                 msg.setSpan(new ForegroundColorSpan(Color.parseColor("#00ff00")), msg.length() - stry.length(), msg.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                             }
                             else if (iz.contains("D") && !iz.contains("S"))
                             {
                                 msg.replace(msg.length() - stry.length(), msg.length(), "✓✓");
-                                textView.setText(TextUtils.concat(msg, msgx));
+                                textView.setText(msg);
                                 stry = "✓✓";
                             }
                         }
@@ -929,6 +1053,7 @@ public class Chat extends AppCompatActivity {
                 });
             }
         }
+        textViewx.setLayoutParams(lp3);
         textView.setLayoutParams(lp2);
         textView.setOnLongClickListener(new View.OnLongClickListener()
         {
@@ -1005,55 +1130,130 @@ public class Chat extends AppCompatActivity {
                         }
                         else if (option.equals("Reply"))
                         {
-                            rep = 1;
-                            String mnb = msg.toString();
-
-                            if (UserDetails.chatWith.equals("1Science"))
+                            if (rep == 0)
                             {
+                                rep = 1;
+                                String mnb = msg.toString();
+
+                                if (UserDetails.chatWith.equals("1Science")) {
+                                    if (mnb.contains("\n")) {
+                                        String mes = "";
+                                        int pos = mnb.indexOf("\n");
+                                        for (int i = pos + 1; i < mnb.length(); i++) {
+                                            mes += mnb.charAt(i);
+                                        }
+                                        mnb = mes;
+                                    }
+                                }
+
                                 if (mnb.contains("\n")) {
                                     String mes = "";
                                     int pos = mnb.indexOf("\n");
-                                    for (int i = pos + 1; i < mnb.length(); i++) {
+                                    for (int i = 0; i < pos; i++) {
                                         mes += mnb.charAt(i);
                                     }
                                     mnb = mes;
                                 }
+                                if (mnb.length() > 20) {
+                                    for (int h = 0; h < 21; h++) {
+                                        repm += mnb.charAt(h);
+                                    }
+                                    repm += "...";
+                                } else {
+                                    repm = mnb;
+                                }
+                                if (us.equals(UserDetails.username)) {
+                                    repkey = keyu;
+                                    repko = keyt;
+                                } else {
+                                    repkey = keyt;
+                                    repko = keyu;
+                                }
+                                repu = us;
+                                replyArea.setVisibility(View.VISIBLE);
+                                replyArea.setText(us + ": " + repm);
+                                replyArea.setOnClickListener(new View.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(View v)
+                                    {
+                                        if (!UserDetails.chatWith.equals("1Science"))
+                                        {
+                                            Firebase referencee2 = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_" + UserDetails.chatWith);
+                                            referencee2.child(repkey).child("scr").setValue("Y");
+                                        }
+                                        else
+                                        {
+                                            Firebase referencee2 = new Firebase("https://scichat-xiscience.firebaseio.com/1Science");
+                                            referencee2.child(repkey).child("scr").setValue(UserDetails.username);
+                                        }
+                                    }
+                                });
                             }
+                            else
+                            {
+                                repm = "";
+                                repkey = "";
+                                repko = "";
+                                repu = "";
+                                rep = 1;
+                                String mnb = msg.toString();
 
-                            if (mnb.contains("\n"))
-                            {
-                                String mes = "";
-                                int pos = mnb.indexOf("\n");
-                                for (int i = 0; i < pos; i++)
-                                {
-                                    mes += mnb.charAt(i);
+                                if (UserDetails.chatWith.equals("1Science")) {
+                                    if (mnb.contains("\n")) {
+                                        String mes = "";
+                                        int pos = mnb.indexOf("\n");
+                                        for (int i = pos + 1; i < mnb.length(); i++) {
+                                            mes += mnb.charAt(i);
+                                        }
+                                        mnb = mes;
+                                    }
                                 }
-                                mnb = mes;
-                            }
-                            if (mnb.length() > 20)
-                            {
-                                for (int h = 0; h < 21; h++)
-                                {
-                                    repm += mnb.charAt(h);
+
+                                if (mnb.contains("\n")) {
+                                    String mes = "";
+                                    int pos = mnb.indexOf("\n");
+                                    for (int i = 0; i < pos; i++) {
+                                        mes += mnb.charAt(i);
+                                    }
+                                    mnb = mes;
                                 }
-                                repm += "...";
+                                if (mnb.length() > 20) {
+                                    for (int h = 0; h < 21; h++) {
+                                        repm += mnb.charAt(h);
+                                    }
+                                    repm += "...";
+                                } else {
+                                    repm = mnb;
+                                }
+                                if (us.equals(UserDetails.username)) {
+                                    repkey = keyu;
+                                    repko = keyt;
+                                } else {
+                                    repkey = keyt;
+                                    repko = keyu;
+                                }
+                                repu = us;
+                                replyArea.setVisibility(View.VISIBLE);
+                                replyArea.setText(us + ": " + repm);
+                                replyArea.setOnClickListener(new View.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(View v)
+                                    {
+                                        if (!UserDetails.chatWith.equals("1Science"))
+                                        {
+                                            Firebase referencee2 = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_" + UserDetails.chatWith);
+                                            referencee2.child(repkey).child("scr").setValue("Y");
+                                        }
+                                        else
+                                        {
+                                            Firebase referencee2 = new Firebase("https://scichat-xiscience.firebaseio.com/1Science");
+                                            referencee2.child(repkey).child("scr").setValue(UserDetails.username);
+                                        }
+                                    }
+                                });
                             }
-                            else
-                            {
-                                repm = mnb;
-                            }
-                            if (us.equals(UserDetails.username))
-                            {
-                                repkey = keyu;
-                                repko = keyt;
-                            }
-                            else
-                            {
-                                repkey = keyt;
-                                repko = keyu;
-                            }
-                            repu = us;
-                            Toast.makeText(Chat.this, "Replying To: " + System.getProperty("line.separator") + us + System.getProperty("line.separator") + repm, Toast.LENGTH_LONG).show();
                         }
                         return true;
                     }
@@ -1063,13 +1263,74 @@ public class Chat extends AppCompatActivity {
                 return true;
             }
         });
+        if (!msgx.toString().equals(""))
+        {
+            layout.addView(textViewx);
+        }
         layout.addView(textView);
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
+        if (read == 0)
+        {
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
+        }
+        else if (read == 1)
+        {
+            scrollToView(scrollView, hgl);
+        }
+        else if (read == 2)
+        {
+            if (redao == 1)
+            {
+                scrollToView(scrollView, hgl);
+                redao = 2;
             }
-        });
+            else {
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        }
+    }
+
+    public void addUnread()
+    {
+        final TextView textView = new TextView(Chat.this);
+        String lop = "UNREAD MESSAGES";
+        textView.setText(lop);
+        textView.setTextIsSelectable(true);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setHighlightColor(Color.TRANSPARENT);
+        hgl = textView;
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        textView.setPadding(10, 5, 10, 5);
+        textView.setBackgroundColor(Color.BLACK);
+        LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp2.weight = 7.0f;
+        lp2.setMargins(0,8,0,0);
+        lp2.gravity = Gravity.CENTER;
+        textView.setLayoutParams(lp2);
+        layout.addView(textView);
+        new CountDownTimer(6000, 50)
+        {
+            @Override
+            public void onTick(long arg0)
+            {
+
+            }
+
+            @Override
+            public void onFinish()
+            {
+                layout.removeView(textView);
+            }
+        }.start();
     }
 
     public void doOnSuccess(String s){
@@ -1137,6 +1398,8 @@ public class Chat extends AppCompatActivity {
     @Override
     protected void onPause()
     {
+        read = 0;
+        redao = 0;
         fbn = 1;
         super.onPause();
         Firebase referencee = new Firebase("https://scichat-xiscience.firebaseio.com/" + UserDetails.username + "_Stat");
